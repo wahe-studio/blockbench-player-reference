@@ -118,16 +118,16 @@ function removeKind(kind: Kind): boolean {
   return Boolean(root || animation);
 }
 
-function addKeyframe(animator: any, channel: string, data: Vec3): void {
+function addKeyframe(animator: any, channel: string, data: Vec3, time = 0): void {
   animator.addKeyframe({
     channel,
-    time: 0,
+    time,
     interpolation: 'linear',
     data_points: [{x: String(data[0]), y: String(data[1]), z: String(data[2])}],
   });
 }
 
-function createAnimation(kind: Kind, bone: any): any {
+function createAnimation(kind: Kind, bone: any, leftArm?: any): any {
   const animation = new Animation({
     name: ANIMATION_NAMES[kind],
     loop: 'hold',
@@ -140,7 +140,11 @@ function createAnimation(kind: Kind, bone: any): any {
     addKeyframe(animator, 'position', FP_POSITION);
     addKeyframe(animator, 'rotation', FP_ROTATION);
   } else {
-    addKeyframe(animator, 'rotation', TP_HOLD_ROTATION);
+    if (leftArm) {
+      const leftAnimator = animation.getBoneAnimator(leftArm);
+      if (!leftAnimator) throw new Error(`无法为 ${leftArm.name} 创建动画轨道`);
+      addKeyframe(leftAnimator, 'rotation', [-12.5, 0, 0], 0);
+    }
   }
   return animation;
 }
@@ -156,7 +160,7 @@ function addKind(kind: Kind, replace = true): void {
     for (const spec of specs) createBone(spec, root, bones);
     const animationBone = bones.get('rightarm');
     if (!animationBone) throw new Error('找不到右臂骨骼');
-    createAnimation(kind, animationBone);
+    createAnimation(kind, animationBone, kind === 'tp' ? bones.get('leftarm') : undefined);
     root.select?.();
     finishUndo(kind === 'fp' ? '添加第一人称玩家手臂' : '添加第三人称玩家模型');
     Blockbench.showQuickMessage(kind === 'fp' ? '已添加第一人称玩家手臂' : '已添加第三人称玩家模型', 1800);
@@ -178,7 +182,7 @@ function addBoth(): void {
       const specs = kind === 'fp' ? FIRST_PERSON_BONES : THIRD_PERSON_BONES;
       const bones = new Map<string, any>();
       for (const spec of specs) createBone(spec, root, bones);
-      createAnimation(kind, bones.get('rightarm'));
+      createAnimation(kind, bones.get('rightarm'), kind === 'tp' ? bones.get('leftarm') : undefined);
     }
     finishUndo('添加第一/第三人称玩家参考');
     Blockbench.showQuickMessage('已添加第一和第三人称玩家参考', 1800);

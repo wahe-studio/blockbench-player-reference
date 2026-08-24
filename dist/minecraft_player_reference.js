@@ -1,13 +1,14 @@
 /* Minecraft Player Reference - Apache-2.0 */
 (() => {
   // src/data.ts
-  var FP_POSITION = [13.5, -10, 12];
+  var FP_POSITION = [4.05, -8.775, 10.5];
   var FP_ROTATION = [95, -45, 115];
-  var TP_HOLD_ROTATION = [-12, 0, 0];
   var FIRST_PERSON_BONES = [
     {
       key: "rightarm",
-      name: "player_ref_fp_rightarm",
+      // Blockbench's attachable preview applies the vanilla first-person pose
+      // to the exact "rightarm" bone name.
+      name: "rightarm",
       origin: [-5, 22, 0],
       cubes: [
         { name: "right_arm", from: [-8, 12, -2], to: [-4, 24, 2], origin: [-5, 22, 0], uv: [40, 16] },
@@ -167,15 +168,15 @@
     if (animation) removeNode(animation);
     return Boolean(root || animation);
   }
-  function addKeyframe(animator, channel, data) {
+  function addKeyframe(animator, channel, data, time = 0) {
     animator.addKeyframe({
       channel,
-      time: 0,
+      time,
       interpolation: "linear",
       data_points: [{ x: String(data[0]), y: String(data[1]), z: String(data[2]) }]
     });
   }
-  function createAnimation(kind, bone) {
+  function createAnimation(kind, bone, leftArm) {
     const animation = new Animation({
       name: ANIMATION_NAMES[kind],
       loop: "hold",
@@ -188,7 +189,11 @@
       addKeyframe(animator, "position", FP_POSITION);
       addKeyframe(animator, "rotation", FP_ROTATION);
     } else {
-      addKeyframe(animator, "rotation", TP_HOLD_ROTATION);
+      if (leftArm) {
+        const leftAnimator = animation.getBoneAnimator(leftArm);
+        if (!leftAnimator) throw new Error(`\u65E0\u6CD5\u4E3A ${leftArm.name} \u521B\u5EFA\u52A8\u753B\u8F68\u9053`);
+        addKeyframe(leftAnimator, "rotation", [-12.5, 0, 0], 0);
+      }
     }
     return animation;
   }
@@ -204,7 +209,7 @@
       for (const spec of specs) createBone(spec, root, bones);
       const animationBone = bones.get("rightarm");
       if (!animationBone) throw new Error("\u627E\u4E0D\u5230\u53F3\u81C2\u9AA8\u9ABC");
-      createAnimation(kind, animationBone);
+      createAnimation(kind, animationBone, kind === "tp" ? bones.get("leftarm") : void 0);
       (_a = root.select) == null ? void 0 : _a.call(root);
       finishUndo(kind === "fp" ? "\u6DFB\u52A0\u7B2C\u4E00\u4EBA\u79F0\u73A9\u5BB6\u624B\u81C2" : "\u6DFB\u52A0\u7B2C\u4E09\u4EBA\u79F0\u73A9\u5BB6\u6A21\u578B");
       Blockbench.showQuickMessage(kind === "fp" ? "\u5DF2\u6DFB\u52A0\u7B2C\u4E00\u4EBA\u79F0\u73A9\u5BB6\u624B\u81C2" : "\u5DF2\u6DFB\u52A0\u7B2C\u4E09\u4EBA\u79F0\u73A9\u5BB6\u6A21\u578B", 1800);
@@ -225,7 +230,7 @@
         const specs = kind === "fp" ? FIRST_PERSON_BONES : THIRD_PERSON_BONES;
         const bones = /* @__PURE__ */ new Map();
         for (const spec of specs) createBone(spec, root, bones);
-        createAnimation(kind, bones.get("rightarm"));
+        createAnimation(kind, bones.get("rightarm"), kind === "tp" ? bones.get("leftarm") : void 0);
       }
       finishUndo("\u6DFB\u52A0\u7B2C\u4E00/\u7B2C\u4E09\u4EBA\u79F0\u73A9\u5BB6\u53C2\u8003");
       Blockbench.showQuickMessage("\u5DF2\u6DFB\u52A0\u7B2C\u4E00\u548C\u7B2C\u4E09\u4EBA\u79F0\u73A9\u5BB6\u53C2\u8003", 1800);

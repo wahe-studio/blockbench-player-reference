@@ -17,14 +17,16 @@ export type BoneSpec = {
   cubes: CubeSpec[];
 };
 
-export const FP_POSITION: Vec3 = [13.5, -10, 12];
+export const FP_POSITION: Vec3 = [4.05, -8.775, 10.5];
 export const FP_ROTATION: Vec3 = [95, -45, 115];
 export const TP_HOLD_ROTATION: Vec3 = [-12, 0, 0];
 
 export const FIRST_PERSON_BONES: BoneSpec[] = [
   {
     key: 'rightarm',
-    name: 'player_ref_fp_rightarm',
+    // Blockbench's attachable preview applies the vanilla first-person pose
+    // to the exact "rightarm" bone name.
+    name: 'rightarm',
     origin: [-5, 22, 0],
     cubes: [
       {name: 'right_arm', from: [-8, 12, -2], to: [-4, 24, 2], origin: [-5, 22, 0], uv: [40, 16]},
