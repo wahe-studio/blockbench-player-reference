@@ -4,18 +4,21 @@
 
 项目地址：<https://github.com/wahe-studio/blockbench-player-reference>
 
-本插件不依赖 `bedrock_attachable`，也不会创建、下载、内嵌或绑定任何贴图。方块会保留标准 64x64 皮肤布局的 UV 坐标，用户可以之后自行添加贴图。
+这是一个独立的 Blockbench 插件，不会创建、下载、内嵌或绑定任何贴图。方块会保留标准 64x64 皮肤布局的 UV 坐标，用户可以之后自行添加贴图。
 
 ## 使用
 
 ### 直接安装
 
-1. 在 GitHub 下载 [dist/minecraft_player_reference.js](https://github.com/wahe-studio/blockbench-player-reference/raw/main/dist/minecraft_player_reference.js)。
-2. 在 Blockbench 中打开“文件 -> 插件 -> 从文件加载插件”。
-3. 选择下载的 `minecraft_player_reference.js`。
-4. 打开 Bedrock 项目，在“过滤/Filter”菜单中使用“玩家参考”操作。
+插件 Raw URL：
 
-Blockbench Web 可能会因为浏览器 CORS 限制而无法直接从 GitHub Raw URL 加载插件；下载 JS 后从文件加载最可靠。桌面版也可以直接选择本地文件。
+<https://raw.githubusercontent.com/wahe-studio/blockbench-player-reference/main/dist/minecraft_player_reference.js>
+
+在 Blockbench 中打开“文件 -> 插件”，选择“从 URL 加载插件”，粘贴上面的地址并加载。加载完成后，打开 Bedrock 项目，在“过滤/Filter”菜单中使用“玩家参考”操作。
+
+如果 URL 加载受到浏览器跨域限制，先打开上面的 URL 下载 `minecraft_player_reference.js`，再使用“从文件加载插件”导入。
+
+桌面版也可以直接选择本地 JS 文件加载。
 
 ### 从源码构建
 
@@ -40,9 +43,11 @@ npm run build
 
 ## 添加内容
 
-第一人称：右臂 `4 x 12 x 4`、袖子层 `inflate 0.25`、位置 `[13.5, -10, 12]`、旋转 `[95, -45, 115]`。
+第一人称：右臂 `4 x 12 x 4`、袖子层 `inflate 0.25`、位置 `[4.05, -8.775, 10.5]`、旋转 `[95, -45, 115]`。
 
-第三人称：头/帽、身体/外套、双臂/袖子、双腿/裤子；主手右臂动画旋转 `[-12, 0, 0]`。
+当当前项目处于 Bedrock 的 `attachable_first` 第一人称预览模式时，插件使用原生 `rightarm` 骨骼名，让 Blockbench 自动应用原版第一人称姿态，同时保留第一人称参考动画关键帧。普通 Bedrock 实体项目同样保留这些参考动画值。
+
+第三人称：头/帽、身体/外套、双臂/袖子、双腿/裤子；当前参考动画只包含左臂在时间 `0` 的旋转 `[-12.5, 0, 0]`。
 
 所有参考组和方块默认 `export = false`，不会随用户模型导出。操作支持 Blockbench Undo。
 
