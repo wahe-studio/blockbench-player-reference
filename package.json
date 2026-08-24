@@ -1,0 +1,14 @@
+{
+  "name": "blockbench-player-reference",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Standalone Blockbench plugin for adding Minecraft player reference models and animations",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --format=iife --target=es2019 --outfile=dist/minecraft_player_reference.js --banner:js=\"/* Minecraft Player Reference - Apache-2.0 */\"",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0"
+  }
+}
